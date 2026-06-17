@@ -1,0 +1,146 @@
+{
+    program: 'cpss',
+    address: 0x10000000,
+    procedures: [
+        {
+            name: 'alloc_block',
+            index: 2,
+            request: [
+                {
+                    name: 'block_id',
+                    description: 'The ID of the block to read from.',
+                    type: 'u32'
+                },
+                {
+                    name: 'size',
+                    description: 'Total size allocated for the block.',
+                    type: 'u64',
+                },
+                {
+                    name: 'elem_size',
+                    description: 'Size per element.',
+                    type: 'u32',
+                }
+            ],
+            response: [
+                {
+                    name: 'seq',
+                    description: 'Sequence number for the allocated block, negagtive if allocation failed.',
+                    type: 'i32'
+                }
+            ]
+        },
+        {
+            name: 'list_blocks',
+            index: 6,
+            request: [ ],
+            maxresponses: 10,
+            response: [
+                { name: 'name', type: 'string', max_len: 60 },
+                { name: 'block_id', type: 'u32' },
+                { name: 'size', type: 'u64' },
+                { name: 'eh_size', type: 'u32' },
+                { name: 'e_size', type: 'u32' },
+                { name: 'available', type: 'u64' },
+            ]
+        },
+        {
+            name: 'purge_blocks',
+            index: 8,
+            request: [ ],
+            response: [ ]
+        },
+        {
+            name: 'free_block',
+            index: 7,
+            request: [
+                { name: 'block_id', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+            ]
+        },
+        {
+            name: 'get_info',
+            index: 9,
+            request: [
+                { name: 'info', type: 'u8' },
+            ],
+            response: [ ]
+        },
+        {
+            name: 'get_block_elements',
+            index: 18,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'num_elements', type: 'u32' },
+            ],
+            response: [
+                { name: 'vaddr', type: 'u64', },
+                { name: 'num_elements_actual', type: 'u32' },
+                { name: 'num_elements_remaining', type: 'u32' },
+                { name: 'eh_size', type: 'u32' },
+                { name: 'e_size', type: 'u32' },
+            ]
+        },
+        {
+            name: 'get_block_element_rdp',
+            index: 14,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'size', type: 'u32' },
+            ],
+            response: [
+                { name: 'vaddr', type: 'u64' },
+                { name: 'size_actual', type: 'u32' },
+            ]
+        },
+        {
+            name: 'get_block_element_rdp_complete',
+            index: 15,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'vaddr', type: 'u64' },
+                { name: 'size', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+            ]
+        },
+        {
+            name: 'put_block_element_rdp',
+            index: 16,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'size', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+                { name: 'vaddr', type: 'u64' },
+            ]
+        },
+        {
+            name: 'put_block_element_rdp_complete',
+            index: 17,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'vaddr', type: 'u64' },
+                { name: 'size', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+            ]
+        },
+        {
+            name: 'drop_elements',
+            index: 19,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'num_elements', type: 'i32' },
+            ],
+            response: [
+                { name: 'num_elements', type: 'i32' },
+            ]
+        },
+    ]
+}
