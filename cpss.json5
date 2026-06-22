@@ -117,6 +117,7 @@
             response: [
                 { name: 'result', type: 'i32' },
                 { name: 'vaddr', type: 'u64' },
+                { name: 'size_actual', type: 'u32' },
             ]
         },
         {
