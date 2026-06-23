@@ -3,7 +3,7 @@
 
 int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_protocol_t protocol, int timeout) {
 
-    rpc_cpss_put_block_element_rdp_request_t put_request = rpc_cpss_put_block_element_rdp_init(node, length);
+    rpc_cpss_put_block_element_rdp_request_t put_request = rpc_cpss_put_block_element_rdp_init(block_id, length);
     rpc_cpss_put_block_element_rdp_response_t put_response;
 
     rpc_cpss_put_block_element_rdp(node, timeout, &put_request, &put_response);
@@ -12,7 +12,14 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_
         return -1;
     }
 
-    vmem_upload_progress(node, timeout, put_response.vaddr, from, put_response.size_actual, 2, NULL);
+    if (node == 0) {
+        vmem_write(put_response.vaddr, from, put_response.size_actual);
+    } else if (protocol == RPC_PROTOCOL_RDP) {
+        vmem_upload_progress(node, timeout, put_response.vaddr, from, put_response.size_actual, 2, NULL);
+    } else {
+        return -3;
+    }
+
 
     rpc_cpss_put_block_element_rdp_complete_request_t put_complete_request = rpc_cpss_put_block_element_rdp_complete_init(block_id, put_response.vaddr, put_response.size_actual);
     rpc_cpss_put_block_element_rdp_complete_response_t put_complete_response;
