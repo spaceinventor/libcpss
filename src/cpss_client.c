@@ -39,7 +39,7 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_pr
         vmem_download_progress(node, timeout, get_response.vaddr, get_response.size_actual, to, 2, 1, NULL);
     } else {
         printf("Unsupported protocol for cpss_get: %d\n", protocol);
-        return -1;
+        return -3;
     }
 
     rpc_cpss_get_block_element_rdp_complete_request_t get_complete_request = rpc_cpss_get_block_element_rdp_complete_init(node, get_response.vaddr, get_response.size_actual);
@@ -51,5 +51,5 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_pr
         return -2;
     }
 
-    return 0;
+    return get_response.size_actual;
 }
