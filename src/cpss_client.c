@@ -1,0 +1,55 @@
+#include "vmem/vmem_client.h"
+#include "rpc_cpss_client.h"
+
+int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_protocol_t protocol, int timeout) {
+
+    rpc_cpss_put_block_element_rdp_request_t put_request = rpc_cpss_put_block_element_rdp_init(node, length);
+    rpc_cpss_put_block_element_rdp_response_t put_response;
+
+    rpc_cpss_put_block_element_rdp(node, timeout, &put_request, &put_response);
+
+    if (put_response.result < 0) {
+        return -1;
+    }
+
+    vmem_upload_progress(node, timeout, put_response.vaddr, from, put_response.size_actual, 2, NULL);
+
+    rpc_cpss_put_block_element_rdp_complete_request_t put_complete_request = rpc_cpss_put_block_element_rdp_complete_init(block_id, put_response.vaddr, put_response.size_actual);
+    rpc_cpss_put_block_element_rdp_complete_response_t put_complete_response;
+
+    rpc_cpss_put_block_element_rdp_complete(node, timeout, &put_complete_request, &put_complete_response);
+
+    return put_response.size_actual;
+}
+
+int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_protocol_t protocol, int timeout) {
+
+    rpc_cpss_get_block_element_rdp_request_t get_request = rpc_cpss_get_block_element_rdp_init(block_id, length);
+    rpc_cpss_get_block_element_rdp_response_t get_response;
+
+    int32_t result = rpc_cpss_get_block_element_rdp(node, timeout, &get_request, &get_response);
+
+    if (result < 0 || get_response.size_actual == 0) {
+        return -1;
+    }
+
+    if (node == 0) {
+        vmem_read(to, get_response.vaddr, get_response.size_actual);
+    } else if (protocol == RPC_PROTOCOL_RDP) {
+        vmem_download_progress(node, timeout, get_response.vaddr, get_response.size_actual, to, 2, 1, NULL);
+    } else {
+        printf("Unsupported protocol for cpss_get: %d\n", protocol);
+        return -1;
+    }
+
+    rpc_cpss_get_block_element_rdp_complete_request_t get_complete_request = rpc_cpss_get_block_element_rdp_complete_init(node, get_response.vaddr, get_response.size_actual);
+    rpc_cpss_get_block_element_rdp_complete_response_t get_complete_response;
+
+    rpc_cpss_get_block_element_rdp_complete(node, timeout, &get_complete_request, &get_complete_response);
+
+    if (get_complete_response.result < 0) {
+        return -2;
+    }
+
+    return 0;
+}
