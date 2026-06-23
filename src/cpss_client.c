@@ -38,7 +38,6 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_pr
     } else if (protocol == RPC_PROTOCOL_RDP) {
         vmem_download_progress(node, timeout, get_response.vaddr, get_response.size_actual, to, 2, 1, NULL);
     } else {
-        printf("Unsupported protocol for cpss_get: %d\n", protocol);
         return -3;
     }
 
