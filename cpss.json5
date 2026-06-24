@@ -76,7 +76,7 @@
                 { name: 'num_elements', type: 'u32' },
             ],
             response: [
-                { name: 'vaddr', type: 'u64', },
+                { name: 'vaddr', type: 'x64', },
                 { name: 'num_elements_actual', type: 'u32' },
                 { name: 'num_elements_remaining', type: 'u32' },
                 { name: 'eh_size', type: 'u32' },
@@ -91,7 +91,7 @@
                 { name: 'size', type: 'u32' },
             ],
             response: [
-                { name: 'vaddr', type: 'u64' },
+                { name: 'vaddr', type: 'x64' },
                 { name: 'size_actual', type: 'u32' },
             ]
         },
@@ -100,7 +100,7 @@
             index: 15,
             request: [
                 { name: 'block_id', type: 'i32' },
-                { name: 'vaddr', type: 'u64' },
+                { name: 'vaddr', type: 'x64' },
                 { name: 'size', type: 'u32' },
             ],
             response: [
@@ -116,7 +116,7 @@
             ],
             response: [
                 { name: 'result', type: 'i32' },
-                { name: 'vaddr', type: 'u64' },
+                { name: 'vaddr', type: 'x64' },
                 { name: 'size_actual', type: 'u32' },
             ]
         },
@@ -125,7 +125,7 @@
             index: 17,
             request: [
                 { name: 'block_id', type: 'i32' },
-                { name: 'vaddr', type: 'u64' },
+                { name: 'vaddr', type: 'x64' },
                 { name: 'size', type: 'u32' },
             ],
             response: [
