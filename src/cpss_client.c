@@ -48,7 +48,7 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_pr
         return -3;
     }
 
-    rpc_cpss_get_block_element_rdp_complete_request_t get_complete_request = rpc_cpss_get_block_element_rdp_complete_init(node, get_response.vaddr, get_response.size_actual);
+    rpc_cpss_get_block_element_rdp_complete_request_t get_complete_request = rpc_cpss_get_block_element_rdp_complete_init(block_id, get_response.vaddr, get_response.size_actual);
     rpc_cpss_get_block_element_rdp_complete_response_t get_complete_response;
 
     rpc_cpss_get_block_element_rdp_complete(node, timeout, &get_complete_request, &get_complete_response);
