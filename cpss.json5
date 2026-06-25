@@ -31,6 +31,69 @@
             ]
         },
         {
+            name: 'block_alloc',
+            index: 3,
+            request: [
+                {
+                    name: 'block_id',
+                    description: 'The ID of the block to to allocate.',
+                    type: 'u32'
+                },
+                {
+                    name: 'elem_size',
+                    description: 'Size per element.',
+                    type: 'u32',
+                },
+                {
+                    name: 'nof_elements',
+                    description: 'Number of elements to in block.',
+                    type: 'u32',
+                },
+                {
+                    name: 'storage_type',
+                    description: 'RAM: 1, EMMC: 2, XTX: 3',
+                    type: 'u8',
+                },
+                { 
+                    name: 'name', 
+                    type: 'string',
+                    max_len: 60,
+                },
+            ],
+            response: [
+                {
+                    name: 'seq',
+                    description: 'Sequence number for the allocated block, negagtive if allocation failed.',
+                    type: 'i32'
+                },
+                {
+                    name: 'size',
+                    description: 'Total size allocated for the block.',
+                    type: 'u64',
+                },
+            ]
+        },
+        {
+            name: 'block_list',
+            index: 4,
+            request: [
+                {
+                    name: 'id', 
+                    description: 'The ID of the block to list, or -1 for all blocks.',
+                    type: 'i32', 
+                }
+             ],
+            maxresponses: 10,
+            response: [
+                { name: 'name', type: 'string', max_len: 60 },
+                { name: 'block_id', type: 'u32' },
+                { name: 'num_elements', type: 'u32' },
+                { name: 'eh_size', type: 'u32' },
+                { name: 'e_size', type: 'u32' },
+                { name: 'available', type: 'u32' },
+            ]
+        },
+        {
             name: 'list_blocks',
             index: 6,
             request: [ ],
