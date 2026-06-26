@@ -88,9 +88,8 @@
                 { name: 'name', type: 'string', max_len: 60 },
                 { name: 'block_id', type: 'u32' },
                 { name: 'num_elements', type: 'u32' },
-                { name: 'eh_size', type: 'u32' },
                 { name: 'e_size', type: 'u32' },
-                { name: 'available', type: 'u32' },
+                { name: 'used', type: 'u32' },
             ]
         },
         {
