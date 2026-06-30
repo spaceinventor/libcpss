@@ -29,9 +29,9 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_
     return put_response.size_actual;
 }
 
-int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_protocol_t protocol, int timeout) {
+int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t * length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
 
-    rpc_cpss_get_block_element_request_t get_request = rpc_cpss_get_block_element_init(block_id, length);
+    rpc_cpss_get_block_element_request_t get_request = rpc_cpss_get_block_element_init(block_id);
     rpc_cpss_get_block_element_response_t get_response;
 
     int32_t result = rpc_cpss_get_block_element(node, timeout, &get_request, &get_response);
@@ -39,6 +39,10 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_pr
     if (result < 0 || get_response.size_actual == 0) {
         return -1;
     }
+
+    *length = get_response.size_actual;
+    timestamp->tv_sec = get_response.timestamp_s;
+    timestamp->tv_nsec = get_response.timestamp_ns;
 
     if (node == 0) {
         vmem_read(to, get_response.vaddr, get_response.size_actual);

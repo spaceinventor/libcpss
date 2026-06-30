@@ -2,4 +2,4 @@
 
 #include "cpss.h"
 
-extern int cpss_get(void * to, int node, uint32_t block_id, uint32_t length, rpc_protocol_t protocol, int timeout);
+extern int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t * length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout);

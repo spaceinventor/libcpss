@@ -160,12 +160,11 @@
             index: 14,
             request: [
                 { name: 'block_id', type: 'i32' },
-                { name: 'size', type: 'u32' },
             ],
             response: [
                 { name: 'vaddr', type: 'x64' },
                 { name: 'size_actual', type: 'u32' },
-                { name: 'timestamp', type: 'u32' },
+                { name: 'timestamp_s', type: 'u32' },
                 { name: 'timestamp_ns', type: 'u32' },
             ]
         },
