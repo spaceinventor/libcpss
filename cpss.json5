@@ -165,6 +165,8 @@
             response: [
                 { name: 'vaddr', type: 'x64' },
                 { name: 'size_actual', type: 'u32' },
+                { name: 'timestamp', type: 'u32' },
+                { name: 'timestamp_ns', type: 'u32' },
             ]
         },
         {
