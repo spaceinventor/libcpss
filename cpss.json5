@@ -186,6 +186,7 @@
             request: [
                 { name: 'block_id', type: 'i32' },
                 { name: 'size', type: 'u32' },
+                { name: 'overwrite', type: 'u8', default: 0 },
                 { name: 'timestamp_s', type: 'u32', default: 0 },
                 { name: 'timestamp_ns', type: 'u32', default: 0 },
             ],
