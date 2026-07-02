@@ -1,9 +1,13 @@
 #include "vmem/vmem_client.h"
 #include "rpc_cpss_client.h"
 
-int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_protocol_t protocol, int timeout) {
+int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
 
     rpc_cpss_put_block_element_request_t put_request = rpc_cpss_put_block_element_init(block_id, length);
+    if (timestamp && timestamp->tv_sec != 0) {
+        put_request.timestamp_s = timestamp->tv_sec;
+        put_request.timestamp_ns = timestamp->tv_nsec;
+    }
     rpc_cpss_put_block_element_response_t put_response;
 
     rpc_cpss_put_block_element(node, timeout, &put_request, &put_response);
@@ -29,7 +33,7 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, rpc_
     return put_response.size_actual;
 }
 
-int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t * length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+int32_t cpss_get(void * to, int node, uint32_t block_id, int32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
 
     rpc_cpss_get_block_element_request_t get_request = rpc_cpss_get_block_element_init(block_id);
     rpc_cpss_get_block_element_response_t get_response;
@@ -40,7 +44,6 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t * length, csp_
         return -1;
     }
 
-    *length = get_response.size_actual;
     timestamp->tv_sec = get_response.timestamp_s;
     timestamp->tv_nsec = get_response.timestamp_ns;
 
