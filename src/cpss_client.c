@@ -10,10 +10,12 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
     }
     rpc_cpss_put_block_element_response_t put_response;
 
-    rpc_cpss_put_block_element(node, timeout, &put_request, &put_response);
+    if (rpc_cpss_put_block_element(node, timeout, &put_request, &put_response) < 0) {
+        return -1;
+    }
 
     if (put_response.result < 0) {
-        return -1;
+        return -2;
     }
 
     if (node == 0) {
@@ -28,7 +30,9 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
     rpc_cpss_put_block_element_complete_request_t put_complete_request = rpc_cpss_put_block_element_complete_init(block_id, put_response.vaddr, put_response.size_actual);
     rpc_cpss_put_block_element_complete_response_t put_complete_response;
 
-    rpc_cpss_put_block_element_complete(node, timeout, &put_complete_request, &put_complete_response);
+    if (rpc_cpss_put_block_element_complete(node, timeout, &put_complete_request, &put_complete_response) < 0) {
+        return -1;
+    }
 
     return put_response.size_actual;
 }
