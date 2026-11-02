@@ -14,14 +14,14 @@ lib_deps = [csp_dep, rpc_dep, clib_dep]
 lib_deps_client = lib_deps + [param_dep]
 
 lib_src_server = []
-gen_src_server = subproject('rpc').get_variable('gen_rpc_server').process('cpss.json5')
+gen_src_server = subproject('rpc').get_variable('gen_rpc_server').process('cpss.json')
 
 include_server = include_directories('include')
 cpssserver = library('cpssserver', [lib_src_server, gen_src_server], include_directories: [include_server, include_directories('.')], dependencies: lib_deps)
 cpssserver_dep = declare_dependency(include_directories : [include_server, include_directories('.')], link_with : cpssserver, dependencies: lib_deps)
 
 lib_src_client = ['src/cpss_client.c']
-gen_src_client = subproject('rpc').get_variable('gen_rpc_client').process('cpss.json5')
+gen_src_client = subproject('rpc').get_variable('gen_rpc_client').process('cpss.json')
 
 include_provider = [include_directories('include'), include_directories('include_provider')]
 cpssprovider = library('cpssprovider', [lib_src_client, gen_src_client], include_directories: [include_provider, include_directories('.')], dependencies: lib_deps_client)
