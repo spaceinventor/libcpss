@@ -1,7 +1,7 @@
 project('cpss', 'c', version: '2.0')
 
 csp_dep = dependency('csp', fallback:['csp', 'csp_dep']).partial_dependency(links: false, includes: true)
-rpc_dep = dependency('rpc', fallback:['rpc', 'rpc_dep'], version: '>=1.1.1')
+rpc_dep = dependency('rpc', fallback:['rpc', 'rpc_dep'], version: ['>=1.1.1'])
 param_dep = dependency('param', fallback:['param', 'param_dep'])
 
 clib = meson.get_compiler('c').find_library('c', required: false)
