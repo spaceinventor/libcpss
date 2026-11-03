@@ -153,6 +153,7 @@
                 { name: 'num_elements_remaining', type: 'u32' },
                 { name: 'eh_size', type: 'u32' },
                 { name: 'elem_size', type: 'u32' },
+                { name: 'vaddr_block_start', type: 'x64', },
             ]
         },
         {

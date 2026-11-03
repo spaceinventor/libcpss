@@ -217,6 +217,9 @@
         {
           "name": "elem_size",
           "type": "u32"
+        },
+        { "name": "vaddr_block_start",
+          "type": "x64"
         }
       ]
     },
