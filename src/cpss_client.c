@@ -20,7 +20,7 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
 
     if (node == 0) {
         vmem_write(put_response.vaddr, from, put_response.size_actual);
-    } else if (protocol == RPC_PROTOCOL_RDP) {
+    } else if (protocol == RPC_PROTOCOL_RDP || protocol == RPC_PROTOCOL_XTX) {
         if (vmem_upload_progress(node, timeout, put_response.vaddr, from, put_response.size_actual, 2, NULL) != put_response.size_actual) {
             return -4;
         }
