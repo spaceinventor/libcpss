@@ -1,6 +1,6 @@
 #include "vmem/vmem_client.h"
-#include "rpc_cpss_client.h"
-#include "rpc_cpssv2_client.h"
+#include <rpc_cpss_client.h>
+#include <rpc_cpssv2_client.h>
 
 static int32_t write_data(int node, uint64_t vaddr, void *from, uint32_t size, rpc_protocol_t protocol, int timeout) {
     if (node == 0) {

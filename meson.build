@@ -1,7 +1,7 @@
-project('cpss', 'c', version: '2.1.0')
+project('cpss', 'c', version: '2.2.0')
 
 csp_dep = dependency('csp', fallback:['csp', 'csp_dep']).partial_dependency(links: false, includes: true)
-rpc_dep = dependency('rpc', fallback:['rpc', 'rpc_dep'], version: ['>=1.2.0'])
+rpc_dep = dependency('rpc', fallback:['rpc', 'rpc_dep'], version: ['>=1.3.0'])
 param_dep = dependency('param', fallback:['param', 'param_dep'])
 
 clib = meson.get_compiler('c').find_library('c', required: false)
@@ -19,9 +19,8 @@ gen_src_server_v2 = subproject('rpc').get_variable('gen_rpc_server').process('cp
 
 include_server = include_directories('include')
 cpssserver = library('cpssserver', [lib_src_server, gen_src_server], include_directories: [include_server, include_directories('.')], dependencies: lib_deps)
-cpssserver_dep = declare_dependency(include_directories : [include_server, include_directories('.')], link_with : cpssserver, dependencies: lib_deps, sources: gen_src_server)
 cpssserver_v2 = library('cpssserver_v2', [lib_src_server, gen_src_server_v2], include_directories: [include_server, include_directories('.')], dependencies: lib_deps)
-cpssserver_v2_dep = declare_dependency(include_directories : [include_server, include_directories('.')], link_with : cpssserver_v2, dependencies: lib_deps, sources: gen_src_server_v2)
+cpssserver_dep = declare_dependency(include_directories : [include_server, include_directories('.')], link_with : [ cpssserver, cpssserver_v2 ], dependencies: lib_deps, sources: gen_src_server)
 
 lib_src_client = ['src/cpss_client.c']
 gen_src_client = subproject('rpc').get_variable('gen_rpc_client').process('cpss.json5')
@@ -29,12 +28,10 @@ gen_src_client_v2 = subproject('rpc').get_variable('gen_rpc_client').process('cp
 
 include_provider = [include_directories('include'), include_directories('include_provider')]
 cpssprovider = library('cpssprovider', [lib_src_client, gen_src_client], include_directories: [include_provider, include_directories('.')], dependencies: lib_deps_client)
-cpssprovider_dep = declare_dependency(include_directories : [include_provider, include_directories('.')], link_with : cpssprovider, dependencies: lib_deps_client, sources: gen_src_client)
 cpssprovider_v2 = library('cpssprovider_v2', [lib_src_client, gen_src_client_v2], include_directories: [include_provider, include_directories('.')], dependencies: lib_deps_client)
-cpssprovider_v2_dep = declare_dependency(include_directories : [include_provider, include_directories('.')], link_with : cpssprovider_v2, dependencies: lib_deps_client, sources: gen_src_client_v2)
+cpssprovider_dep = declare_dependency(include_directories : [include_provider, include_directories('.')], link_with : [ cpssprovider, cpssprovider_v2 ], dependencies: lib_deps_client, sources: gen_src_client)
 
 include_consumer = [include_directories('include'), include_directories('include_consumer')]
 cpssconsumer = library('cpssconsumer', [lib_src_client, gen_src_client], include_directories: [include_consumer, include_directories('.')], dependencies: lib_deps_client)
-cpssconsumer_dep = declare_dependency(include_directories : [include_consumer, include_directories('.')], link_with : cpssconsumer, dependencies: lib_deps_client)
-cpssconsumer_v2 = library('cpssconsumer_v2', [lib_src_client, gen_src_client], include_directories: [include_consumer, include_directories('.')], dependencies: lib_deps_client)
-cpssconsumer_v2_dep = declare_dependency(include_directories : [include_consumer, include_directories('.')], link_with : cpssconsumer_v2, dependencies: lib_deps_client)
+cpssconsumer_v2 = library('cpssconsumer_v2', [lib_src_client, gen_src_client_v2], include_directories: [include_consumer, include_directories('.')], dependencies: lib_deps_client)
+cpssconsumer_dep = declare_dependency(include_directories : [include_consumer, include_directories('.')], link_with : [ cpssconsumer, cpssconsumer_v2 ], dependencies: lib_deps_client)
