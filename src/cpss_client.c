@@ -3,12 +3,14 @@
 
 int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
 
-    rpc_cpss_put_block_element_request_t put_request = rpc_cpss_put_block_element_init(block_id, length);
+    rpc_cpss_put_block_element_request_t put_request;
+    rpc_cpss_put_block_element_response_t put_response;
+    rpc_cpss_put_block_element_init(&put_request, block_id, length);
+
     if (timestamp && timestamp->tv_sec != 0) {
         put_request.timestamp_s = timestamp->tv_sec;
         put_request.timestamp_ns = timestamp->tv_nsec;
     }
-    rpc_cpss_put_block_element_response_t put_response;
 
     if (rpc_cpss_put_block_element(node, timeout, &put_request, &put_response) < 0) {
         return -1;
@@ -28,8 +30,9 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
         return -3;
     }
 
-    rpc_cpss_put_block_element_complete_request_t put_complete_request = rpc_cpss_put_block_element_complete_init(block_id, put_response.vaddr, put_response.size_actual);
+    rpc_cpss_put_block_element_complete_request_t put_complete_request;
     rpc_cpss_put_block_element_complete_response_t put_complete_response;
+    rpc_cpss_put_block_element_complete_init(&put_complete_request, block_id, put_response.vaddr, put_response.size_actual);
 
     if (rpc_cpss_put_block_element_complete(node, timeout, &put_complete_request, &put_complete_response) < 0) {
         return -1;
@@ -40,8 +43,9 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
 
 int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
 
-    rpc_cpss_get_block_element_request_t get_request = rpc_cpss_get_block_element_init(block_id);
+    rpc_cpss_get_block_element_request_t get_request;
     rpc_cpss_get_block_element_response_t get_response;
+    rpc_cpss_get_block_element_init(&get_request, block_id);
 
     int32_t result = rpc_cpss_get_block_element(node, timeout, &get_request, &get_response);
 
@@ -60,8 +64,9 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, csp_ti
         return -3;
     }
 
-    rpc_cpss_get_block_element_complete_request_t get_complete_request = rpc_cpss_get_block_element_complete_init(block_id, get_response.vaddr, get_response.size_actual);
+    rpc_cpss_get_block_element_complete_request_t get_complete_request;
     rpc_cpss_get_block_element_complete_response_t get_complete_response;
+    rpc_cpss_get_block_element_complete_init(&get_complete_request, block_id, get_response.vaddr, get_response.size_actual);
 
     rpc_cpss_get_block_element_complete(node, timeout, &get_complete_request, &get_complete_response);
 
