@@ -178,7 +178,7 @@
             index: 8,
             request: [
                 { name: 'block_id', type: 'i32' },
-                { name: 'num_elements', type: 'i32' },
+                { name: 'num_elements', type: 'i32', default: 1 },
             ],
             response: [
                 { name: 'num_elements', type: 'i32' },

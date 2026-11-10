@@ -381,8 +381,7 @@
                 },
                 {
                     "name": "num_elements",
-                    "type": "i32",
-                    "default": 1
+                    "type": "i32"
                 }
             ],
             "response": [

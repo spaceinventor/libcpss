@@ -164,7 +164,8 @@ static int32_t cpssv3_get(void * to, int node, uint32_t block_id, uint32_t numbe
 
     rpc_cpssv3_elements_drop_request_t drop_request;
     rpc_cpssv3_elements_drop_response_t drop_response;
-    rpc_cpssv3_elements_drop_init(&drop_request, block_id, get_response.num_elements_actual);
+    rpc_cpssv3_elements_drop_init(&drop_request, block_id);
+    drop_request.num_elements = get_response.num_elements_actual;
 
     if (rpc_cpssv3_elements_drop(node, timeout, &drop_request, &drop_response) < 0) {
         return -2;

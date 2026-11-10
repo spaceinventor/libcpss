@@ -286,7 +286,8 @@
                 },
                 {
                     "name": "num_elements",
-                    "type": "i32"
+                    "type": "i32",
+                    "default": 1
                 }
             ],
             "response": [
