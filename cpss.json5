@@ -19,15 +19,15 @@
                     value: '2',
                 },
                 {
-                    name: 'protocol_v2_rdp',
+                    name: 'protocol_v3_rdp',
                     value: '3',
                 },
                 {
-                    name: 'protocol_v2_dtp',
+                    name: 'protocol_v3_dtp',
                     value: '4',
                 },
                 {
-                    name: 'protocol_v2_xtx',
+                    name: 'protocol_v3_xtx',
                     value: '5',
                 }
             ]
@@ -245,7 +245,7 @@
             index: 19,
             request: [
                 { name: 'block_id', type: 'i32' },
-                { name: 'num_elements', type: 'i32' },
+                { name: 'num_elements', type: 'i32', default: 1 },
             ],
             response: [
                 { name: 'num_elements', type: 'i32' },

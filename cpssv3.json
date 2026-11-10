@@ -1,6 +1,6 @@
 {
-    "program": "cpssv2",
-    "address": 268435458,
+    "program": "cpssv3",
+    "address": 268435459,
     "enums": [
         {
             "name": "storage_type",
@@ -28,7 +28,7 @@
     "procedures": [
         {
             "name": "block_alloc",
-            "index": 20,
+            "index": 0,
             "request": [
                 {
                     "name": "block_id",
@@ -76,7 +76,7 @@
         },
         {
             "name": "block_list",
-            "index": 21,
+            "index": 1,
             "request": [
                 {
                     "name": "id",
@@ -115,14 +115,8 @@
             ]
         },
         {
-            "name": "purge_blocks",
-            "index": 8,
-            "request": [],
-            "response": []
-        },
-        {
-            "name": "free_block",
-            "index": 7,
+            "name": "block_free",
+            "index": 2,
             "request": [
                 {
                     "name": "block_id",
@@ -138,7 +132,7 @@
         },
         {
             "name": "get_info",
-            "index": 9,
+            "index": 3,
             "request": [
                 {
                     "name": "info",
@@ -148,8 +142,8 @@
             "response": []
         },
         {
-            "name": "get_block_elements",
-            "index": 18,
+            "name": "elements_get",
+            "index": 4,
             "request": [
                 {
                     "name": "block_id",
@@ -188,8 +182,8 @@
             ]
         },
         {
-            "name": "get_block_element",
-            "index": 14,
+            "name": "element_get",
+            "index": 5,
             "request": [
                 {
                     "name": "block_id",
@@ -216,8 +210,8 @@
             ]
         },
         {
-            "name": "put_block_element",
-            "index": 16,
+            "name": "element_put",
+            "index": 6,
             "request": [
                 {
                     "name": "block_id",
@@ -259,8 +253,8 @@
             ]
         },
         {
-            "name": "put_block_element_complete",
-            "index": 17,
+            "name": "element_put_complete",
+            "index": 7,
             "request": [
                 {
                     "name": "block_id",
@@ -283,8 +277,8 @@
             ]
         },
         {
-            "name": "drop_elements",
-            "index": 19,
+            "name": "elements_drop",
+            "index": 8,
             "request": [
                 {
                     "name": "block_id",
