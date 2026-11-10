@@ -2,11 +2,11 @@
 #include <rpc_cpss_client.h>
 #include <rpc_cpssv2_client.h>
 
-static int32_t write_data(int node, uint64_t vaddr, void *from, uint32_t size, rpc_protocol_t protocol, int timeout) {
+static int32_t write_data(int node, uint64_t vaddr, void *from, uint32_t size, rpc_cpss_protocol_t protocol, int timeout) {
     if (node == 0) {
         vmem_write(vaddr, from, size);
-    } else if (protocol == RPC_PROTOCOL_RDP || protocol == RPC_PROTOCOL_XTX ||
-               protocol == RPC_PROTOCOL_V2_RDP || protocol == RPC_PROTOCOL_V2_XTX) {
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP || protocol == RPC_CPSS_PROTOCOL_XTX ||
+               protocol == RPC_CPSS_PROTOCOL_V2_RDP || protocol == RPC_CPSS_PROTOCOL_V2_XTX) {
         if (vmem_upload_progress(node, timeout, vaddr, from, size, 2, NULL) != size) {
             return -4;
         }
@@ -17,7 +17,7 @@ static int32_t write_data(int node, uint64_t vaddr, void *from, uint32_t size, r
     return 0;
 }
 
-static int32_t cpssv1_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t cpssv1_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
     rpc_cpss_put_block_element_request_t put_request;
     rpc_cpss_put_block_element_response_t put_response;
     rpc_cpss_put_block_element_init(&put_request, block_id, length);
@@ -51,7 +51,7 @@ static int32_t cpssv1_put(int node, uint32_t block_id, void * from, uint32_t len
     return put_response.size_actual;
 }
 
-static int32_t cpssv2_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t cpssv2_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
     rpc_cpssv2_put_block_element_request_t put_request;
     rpc_cpssv2_put_block_element_response_t put_response;
     rpc_cpssv2_put_block_element_init(&put_request, block_id, length);
@@ -85,15 +85,15 @@ static int32_t cpssv2_put(int node, uint32_t block_id, void * from, uint32_t len
     return put_response.size_actual;
 }
 
-int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
     switch (protocol) {
-        case RPC_PROTOCOL_RDP:
-        case RPC_PROTOCOL_DTP:
-        case RPC_PROTOCOL_XTX:
+        case RPC_CPSS_PROTOCOL_RDP:
+        case RPC_CPSS_PROTOCOL_DTP:
+        case RPC_CPSS_PROTOCOL_XTX:
             return cpssv1_put(node, block_id, from, length, timestamp, protocol, timeout);
-        case RPC_PROTOCOL_V2_RDP:
-        case RPC_PROTOCOL_V2_DTP:
-        case RPC_PROTOCOL_V2_XTX:
+        case RPC_CPSS_PROTOCOL_V2_RDP:
+        case RPC_CPSS_PROTOCOL_V2_DTP:
+        case RPC_CPSS_PROTOCOL_V2_XTX:
             return cpssv2_put(node, block_id, from, length, timestamp, protocol, timeout);
         default:
             break;
@@ -102,7 +102,7 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
     return -1;
 }
 
-static int32_t cpssv1_get(void * to, int node, uint32_t block_id, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t cpssv1_get(void * to, int node, uint32_t block_id, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
 
     rpc_cpss_get_block_element_request_t get_request;
     rpc_cpss_get_block_element_response_t get_response;
@@ -119,7 +119,7 @@ static int32_t cpssv1_get(void * to, int node, uint32_t block_id, csp_timestamp_
 
     if (node == 0) {
         vmem_read(to, get_response.vaddr, get_response.size_actual);
-    } else if (protocol == RPC_PROTOCOL_RDP) {
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP) {
         vmem_download_progress(node, timeout, get_response.vaddr, get_response.size_actual, to, 2, 1, NULL);
     } else {
         return -3;
@@ -138,7 +138,7 @@ static int32_t cpssv1_get(void * to, int node, uint32_t block_id, csp_timestamp_
     return get_response.size_actual;
 }
 
-static int32_t cpssv2_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t cpssv2_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
 
     rpc_cpssv2_get_block_elements_request_t get_request;
     rpc_cpssv2_get_block_elements_response_t get_response;
@@ -156,7 +156,7 @@ static int32_t cpssv2_get(void * to, int node, uint32_t block_id, uint32_t numbe
 
     if (node == 0) {
         vmem_read(to, get_response.vaddr, get_response.num_elements_actual);
-    } else if (protocol == RPC_PROTOCOL_RDP) {
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP) {
         vmem_download_progress(node, timeout, get_response.vaddr, get_response.num_elements_actual, to, 2, 1, NULL);
     } else {
         return -3;
@@ -173,15 +173,15 @@ static int32_t cpssv2_get(void * to, int node, uint32_t block_id, uint32_t numbe
     return get_response.num_elements_actual;
 }
 
-int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
     switch (protocol) {
-        case RPC_PROTOCOL_RDP:
-        case RPC_PROTOCOL_DTP:
-        case RPC_PROTOCOL_XTX:
+        case RPC_CPSS_PROTOCOL_RDP:
+        case RPC_CPSS_PROTOCOL_DTP:
+        case RPC_CPSS_PROTOCOL_XTX:
             return cpssv1_get(to, node, block_id, timestamp, protocol, timeout);
-        case RPC_PROTOCOL_V2_RDP:
-        case RPC_PROTOCOL_V2_DTP:
-        case RPC_PROTOCOL_V2_XTX:
+        case RPC_CPSS_PROTOCOL_V2_RDP:
+        case RPC_CPSS_PROTOCOL_V2_DTP:
+        case RPC_CPSS_PROTOCOL_V2_XTX:
             return cpssv2_get(to, node, block_id, number_of_elements, timestamp, protocol, timeout);
         default:
             break;

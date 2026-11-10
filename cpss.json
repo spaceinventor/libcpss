@@ -1,363 +1,395 @@
 {
-  "program": "cpss",
-  "address": 268435456,
-  "procedures": [
-    {
-      "name": "alloc_block",
-      "index": 2,
-      "request": [
+    "program": "cpss",
+    "address": 268435456,
+    "enums": [
         {
-          "name": "block_id",
-          "description": "The ID of the block to read from.",
-          "type": "u32"
-        },
-        {
-          "name": "size",
-          "description": "Total size allocated for the block.",
-          "type": "u64"
-        },
-        {
-          "name": "elem_size",
-          "description": "Size per element.",
-          "type": "u32"
+            "name": "protocol",
+            "description": "The protocol to use in cpss_put and cpss_get",
+            "items": [
+                {
+                    "name": "protocol_rdp",
+                    "value": "0"
+                },
+                {
+                    "name": "protocol_dtp",
+                    "value": "1"
+                },
+                {
+                    "name": "protocol_xtx",
+                    "value": "2"
+                },
+                {
+                    "name": "protocol_v2_rdp",
+                    "value": "3"
+                },
+                {
+                    "name": "protocol_v2_dtp",
+                    "value": "4"
+                },
+                {
+                    "name": "protocol_v2_xtx",
+                    "value": "5"
+                }
+            ]
         }
-      ],
-      "response": [
+    ],
+    "procedures": [
         {
-          "name": "seq",
-          "description": "Sequence number for the allocated block, negagtive if allocation failed.",
-          "type": "i32"
+            "name": "alloc_block",
+            "index": 2,
+            "request": [
+                {
+                    "name": "block_id",
+                    "description": "The ID of the block to read from.",
+                    "type": "u32"
+                },
+                {
+                    "name": "size",
+                    "description": "Total size allocated for the block.",
+                    "type": "u64"
+                },
+                {
+                    "name": "elem_size",
+                    "description": "Size per element.",
+                    "type": "u32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "seq",
+                    "description": "Sequence number for the allocated block, negagtive if allocation failed.",
+                    "type": "i32"
+                }
+            ]
+        },
+        {
+            "name": "block_alloc",
+            "index": 20,
+            "request": [
+                {
+                    "name": "block_id",
+                    "description": "The ID of the block to to allocate.",
+                    "type": "u32"
+                },
+                {
+                    "name": "elem_size",
+                    "description": "Size per element.",
+                    "type": "u32"
+                },
+                {
+                    "name": "num_elements",
+                    "description": "Number of elements to in block.",
+                    "type": "u32"
+                },
+                {
+                    "name": "storage_type",
+                    "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
+                    "type": "u8"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "max_len": 60
+                }
+            ],
+            "response": [
+                {
+                    "name": "seq",
+                    "description": "Sequence number for the allocated block, negative if allocation failed.",
+                    "type": "i32"
+                },
+                {
+                    "name": "size",
+                    "description": "Total size allocated for the block.",
+                    "type": "u64"
+                },
+                {
+                    "name": "storage_type",
+                    "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "block_list",
+            "index": 21,
+            "request": [
+                {
+                    "name": "id",
+                    "description": "The ID of the block to list, or -1 for all blocks.",
+                    "type": "i32"
+                }
+            ],
+            "maxresponses": 10,
+            "response": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "max_len": 60
+                },
+                {
+                    "name": "block_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "num_elements",
+                    "type": "u32"
+                },
+                {
+                    "name": "elem_size",
+                    "type": "u32"
+                },
+                {
+                    "name": "num_used",
+                    "type": "u32"
+                },
+                {
+                    "name": "storage_type",
+                    "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "list_blocks",
+            "index": 6,
+            "request": [],
+            "maxresponses": 10,
+            "response": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "max_len": 60
+                },
+                {
+                    "name": "block_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "size",
+                    "type": "u64"
+                },
+                {
+                    "name": "eh_size",
+                    "type": "u32"
+                },
+                {
+                    "name": "elem_size",
+                    "type": "u32"
+                },
+                {
+                    "name": "available",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "purge_blocks",
+            "index": 8,
+            "request": [],
+            "response": []
+        },
+        {
+            "name": "free_block",
+            "index": 7,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "u32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "result",
+                    "type": "i32"
+                }
+            ]
+        },
+        {
+            "name": "get_info",
+            "index": 9,
+            "request": [
+                {
+                    "name": "info",
+                    "type": "u8"
+                }
+            ],
+            "response": []
+        },
+        {
+            "name": "get_block_elements",
+            "index": 18,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                },
+                {
+                    "name": "num_elements",
+                    "type": "u32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "vaddr",
+                    "type": "x64"
+                },
+                {
+                    "name": "num_elements_actual",
+                    "type": "u32"
+                },
+                {
+                    "name": "num_elements_remaining",
+                    "type": "u32"
+                },
+                {
+                    "name": "eh_size",
+                    "type": "u32"
+                },
+                {
+                    "name": "elem_size",
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "get_block_element",
+            "index": 14,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "vaddr",
+                    "type": "x64"
+                },
+                {
+                    "name": "size_actual",
+                    "type": "u32"
+                },
+                {
+                    "name": "timestamp_s",
+                    "type": "u32"
+                },
+                {
+                    "name": "timestamp_ns",
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "get_block_element_complete",
+            "index": 15,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                },
+                {
+                    "name": "vaddr",
+                    "type": "x64"
+                },
+                {
+                    "name": "size",
+                    "type": "u32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "result",
+                    "type": "i32"
+                }
+            ]
+        },
+        {
+            "name": "put_block_element",
+            "index": 16,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                },
+                {
+                    "name": "size",
+                    "type": "u32"
+                },
+                {
+                    "name": "overwrite",
+                    "type": "u8",
+                    "default": 0
+                },
+                {
+                    "name": "timestamp_s",
+                    "type": "u32",
+                    "default": 0
+                },
+                {
+                    "name": "timestamp_ns",
+                    "type": "u32",
+                    "default": 0
+                }
+            ],
+            "response": [
+                {
+                    "name": "result",
+                    "type": "i32"
+                },
+                {
+                    "name": "vaddr",
+                    "type": "x64"
+                },
+                {
+                    "name": "size_actual",
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "put_block_element_complete",
+            "index": 17,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                },
+                {
+                    "name": "vaddr",
+                    "type": "x64"
+                },
+                {
+                    "name": "size",
+                    "type": "u32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "result",
+                    "type": "i32"
+                }
+            ]
+        },
+        {
+            "name": "drop_elements",
+            "index": 19,
+            "request": [
+                {
+                    "name": "block_id",
+                    "type": "i32"
+                },
+                {
+                    "name": "num_elements",
+                    "type": "i32"
+                }
+            ],
+            "response": [
+                {
+                    "name": "num_elements",
+                    "type": "i32"
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "block_alloc",
-      "index": 20,
-      "request": [
-        {
-          "name": "block_id",
-          "description": "The ID of the block to to allocate.",
-          "type": "u32"
-        },
-        {
-          "name": "elem_size",
-          "description": "Size per element.",
-          "type": "u32"
-        },
-        {
-          "name": "num_elements",
-          "description": "Number of elements to in block.",
-          "type": "u32"
-        },
-        {
-          "name": "storage_type",
-          "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
-          "type": "u8"
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "max_len": 60
-        }
-      ],
-      "response": [
-        {
-          "name": "seq",
-          "description": "Sequence number for the allocated block, negative if allocation failed.",
-          "type": "i32"
-        },
-        {
-          "name": "size",
-          "description": "Total size allocated for the block.",
-          "type": "u64"
-        },
-        {
-          "name": "storage_type",
-          "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "block_list",
-      "index": 21,
-      "request": [
-        {
-          "name": "id",
-          "description": "The ID of the block to list, or -1 for all blocks.",
-          "type": "i32"
-        }
-      ],
-      "maxresponses": 10,
-      "response": [
-        {
-          "name": "name",
-          "type": "string",
-          "max_len": 60
-        },
-        {
-          "name": "block_id",
-          "type": "u32"
-        },
-        {
-          "name": "num_elements",
-          "type": "u32"
-        },
-        {
-          "name": "elem_size",
-          "type": "u32"
-        },
-        {
-          "name": "num_used",
-          "type": "u32"
-        },
-        {
-          "name": "storage_type",
-          "description": "FILE: 0, RAM: 1, EMMC: 2, XTX: 3",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "list_blocks",
-      "index": 6,
-      "request": [],
-      "maxresponses": 10,
-      "response": [
-        {
-          "name": "name",
-          "type": "string",
-          "max_len": 60
-        },
-        {
-          "name": "block_id",
-          "type": "u32"
-        },
-        {
-          "name": "size",
-          "type": "u64"
-        },
-        {
-          "name": "eh_size",
-          "type": "u32"
-        },
-        {
-          "name": "elem_size",
-          "type": "u32"
-        },
-        {
-          "name": "available",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "purge_blocks",
-      "index": 8,
-      "request": [],
-      "response": []
-    },
-    {
-      "name": "free_block",
-      "index": 7,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "u32"
-        }
-      ],
-      "response": [
-        {
-          "name": "result",
-          "type": "i32"
-        }
-      ]
-    },
-    {
-      "name": "get_info",
-      "index": 9,
-      "request": [
-        {
-          "name": "info",
-          "type": "u8"
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "get_block_elements",
-      "index": 18,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        },
-        {
-          "name": "num_elements",
-          "type": "u32"
-        }
-      ],
-      "response": [
-        {
-          "name": "vaddr",
-          "type": "x64"
-        },
-        {
-          "name": "num_elements_actual",
-          "type": "u32"
-        },
-        {
-          "name": "num_elements_remaining",
-          "type": "u32"
-        },
-        {
-          "name": "eh_size",
-          "type": "u32"
-        },
-        {
-          "name": "elem_size",
-          "type": "u32"
-        }
-      ]
-    },
-    {
-      "name": "get_block_element",
-      "index": 14,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        }
-      ],
-      "response": [
-        {
-          "name": "vaddr",
-          "type": "x64"
-        },
-        {
-          "name": "size_actual",
-          "type": "u32"
-        },
-        {
-          "name": "timestamp_s",
-          "type": "u32"
-        },
-        {
-          "name": "timestamp_ns",
-          "type": "u32"
-        }
-      ]
-    },
-    {
-      "name": "get_block_element_complete",
-      "index": 15,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        },
-        {
-          "name": "vaddr",
-          "type": "x64"
-        },
-        {
-          "name": "size",
-          "type": "u32"
-        }
-      ],
-      "response": [
-        {
-          "name": "result",
-          "type": "i32"
-        }
-      ]
-    },
-    {
-      "name": "put_block_element",
-      "index": 16,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        },
-        {
-          "name": "size",
-          "type": "u32"
-        },
-        {
-          "name": "overwrite",
-          "type": "u8",
-          "default": 0
-        },
-        {
-          "name": "timestamp_s",
-          "type": "u32",
-          "default": 0
-        },
-        {
-          "name": "timestamp_ns",
-          "type": "u32",
-          "default": 0
-        }
-      ],
-      "response": [
-        {
-          "name": "result",
-          "type": "i32"
-        },
-        {
-          "name": "vaddr",
-          "type": "x64"
-        },
-        {
-          "name": "size_actual",
-          "type": "u32"
-        }
-      ]
-    },
-    {
-      "name": "put_block_element_complete",
-      "index": 17,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        },
-        {
-          "name": "vaddr",
-          "type": "x64"
-        },
-        {
-          "name": "size",
-          "type": "u32"
-        }
-      ],
-      "response": [
-        {
-          "name": "result",
-          "type": "i32"
-        }
-      ]
-    },
-    {
-      "name": "drop_elements",
-      "index": 19,
-      "request": [
-        {
-          "name": "block_id",
-          "type": "i32"
-        },
-        {
-          "name": "num_elements",
-          "type": "i32"
-        }
-      ],
-      "response": [
-        {
-          "name": "num_elements",
-          "type": "i32"
-        }
-      ]
-    }
-  ]
+    ]
 }
