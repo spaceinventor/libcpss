@@ -1,6 +1,30 @@
 {
     program: 'cpssv2',
     address: 0x10000002,
+    enums: [
+        {
+            name: 'storage_type',
+            description: 'The storage type',
+            items: [
+                {
+                    name: 'storage_type_file',
+                    value: '0',
+                },
+                {
+                    name: 'storage_type_ram',
+                    value: '1',
+                },
+                {
+                    name: 'storage_type_emmc',
+                    value: '2',
+                },
+                {
+                    name: 'storage_type_xtx',
+                    value: '3',
+                }
+            ]
+        }
+    ],
     procedures: [
         {
             name: 'block_alloc',
@@ -22,9 +46,9 @@
                     type: 'u32',
                 },
                 {
-                    name: 'storage_type',
+                    name: 'storage',
                     description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
-                    type: 'u8',
+                    type: 'storage_type',
                 },
                 { 
                     name: 'name', 
@@ -44,9 +68,9 @@
                     type: 'u64',
                 },
                 {
-                    name: 'storage_type',
+                    name: 'storage',
                     description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
-                    type: 'u8',
+                    type: 'storage_type',
                 },
             ]
         },
@@ -68,9 +92,9 @@
                 { name: 'elem_size', type: 'u32' },
                 { name: 'num_used', type: 'u32' },
                 {
-                    name: 'storage_type',
+                    name: 'storage',
                     description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
-                    type: 'u8',
+                    type: 'storage_type',
                 },
             ]
         },
