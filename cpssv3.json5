@@ -19,7 +19,7 @@
                     value: '2',
                 },
                 {
-                    name: 'storage_type_xtx',
+                    name: 'storage_type_xtxg2',
                     value: '3',
                 }
             ]
@@ -47,7 +47,7 @@
                 },
                 {
                     name: 'storage',
-                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
                     type: 'storage_type',
                 },
                 { 
@@ -69,7 +69,7 @@
                 },
                 {
                     name: 'storage',
-                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
                     type: 'storage_type',
                 },
             ]
@@ -93,7 +93,7 @@
                 { name: 'num_used', type: 'u32' },
                 {
                     name: 'storage',
-                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTX: 3',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
                     type: 'storage_type',
                 },
             ]
