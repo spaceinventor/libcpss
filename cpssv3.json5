@@ -1,0 +1,188 @@
+{
+    program: 'cpssv3',
+    address: 0x10000003,
+    enums: [
+        {
+            name: 'storage_type',
+            description: 'The storage type',
+            items: [
+                {
+                    name: 'storage_type_file',
+                    value: '0',
+                },
+                {
+                    name: 'storage_type_ram',
+                    value: '1',
+                },
+                {
+                    name: 'storage_type_emmc',
+                    value: '2',
+                },
+                {
+                    name: 'storage_type_xtxg2',
+                    value: '3',
+                }
+            ]
+        }
+    ],
+    procedures: [
+        {
+            name: 'block_alloc',
+            index: 0,
+            request: [
+                {
+                    name: 'block_id',
+                    description: 'The ID of the block to to allocate.',
+                    type: 'u32'
+                },
+                {
+                    name: 'elem_size',
+                    description: 'Size per element.',
+                    type: 'u32',
+                },
+                {
+                    name: 'num_elements',
+                    description: 'Number of elements to in block.',
+                    type: 'u32',
+                },
+                {
+                    name: 'storage',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
+                    type: 'storage_type',
+                },
+                { 
+                    name: 'name', 
+                    type: 'string',
+                    max_len: 60,
+                },
+            ],
+            response: [
+                {
+                    name: 'seq',
+                    description: 'Sequence number for the allocated block, negative if allocation failed.',
+                    type: 'i32'
+                },
+                {
+                    name: 'size',
+                    description: 'Total size allocated for the block.',
+                    type: 'u64',
+                },
+                {
+                    name: 'storage',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
+                    type: 'storage_type',
+                },
+            ]
+        },
+        {
+            name: 'block_list',
+            index: 1,
+            request: [
+                {
+                    name: 'id', 
+                    description: 'The ID of the block to list, or -1 for all blocks.',
+                    type: 'i32', 
+                }
+             ],
+            maxresponses: 10,
+            response: [
+                { name: 'name', type: 'string', max_len: 60 },
+                { name: 'block_id', type: 'u32' },
+                { name: 'num_elements', type: 'u32' },
+                { name: 'elem_size', type: 'u32' },
+                { name: 'num_used', type: 'u32' },
+                {
+                    name: 'storage',
+                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
+                    type: 'storage_type',
+                },
+            ]
+        },
+        {
+            name: 'block_free',
+            index: 2,
+            request: [
+                { name: 'block_id', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+            ]
+        },
+        {
+            name: 'get_info',
+            index: 3,
+            request: [
+                { name: 'info', type: 'u8' },
+            ],
+            response: [ ]
+        },
+        {
+            name: 'elements_get',
+            index: 4,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'num_elements', type: 'u32' },
+            ],
+            response: [
+                { name: 'vaddr', type: 'x64', },
+                { name: 'num_elements_actual', type: 'u32' },
+                { name: 'num_elements_remaining', type: 'u32' },
+                { name: 'eh_size', type: 'u32' },
+                { name: 'elem_size', type: 'u32' },
+                { name: 'vaddr_block_start', type: 'x64', },
+            ]
+        },
+        {
+            name: 'element_get',
+            index: 5,
+            request: [
+                { name: 'block_id', type: 'i32' },
+            ],
+            response: [
+                { name: 'vaddr', type: 'x64' },
+                { name: 'size_actual', type: 'u32' },
+                { name: 'timestamp_s', type: 'u32' },
+                { name: 'timestamp_ns', type: 'u32' },
+            ]
+        },
+        {
+            name: 'element_put',
+            index: 6,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'size', type: 'u32' },
+                { name: 'overwrite', type: 'u8', default: 0 },
+                { name: 'timestamp_s', type: 'u32', default: 0 },
+                { name: 'timestamp_ns', type: 'u32', default: 0 },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+                { name: 'vaddr', type: 'x64' },
+                { name: 'size_actual', type: 'u32' },
+            ]
+        },
+        {
+            name: 'element_put_complete',
+            index: 7,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'vaddr', type: 'x64' },
+                { name: 'size', type: 'u32' },
+            ],
+            response: [
+                { name: 'result', type: 'i32' },
+            ]
+        },
+        {
+            name: 'elements_drop',
+            index: 8,
+            request: [
+                { name: 'block_id', type: 'i32' },
+                { name: 'num_elements', type: 'i32', default: 1 },
+            ],
+            response: [
+                { name: 'num_elements', type: 'i32' },
+            ]
+        },
+    ]
+}

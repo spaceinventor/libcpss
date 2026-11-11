@@ -1,6 +1,38 @@
 {
     program: 'cpss',
     address: 0x10000000,
+    enums: [
+        {
+            name: 'protocol',
+            description: 'The protocol to use in cpss_put and cpss_get',
+            items: [
+                {
+                    name: 'protocol_rdp',
+                    value: '0',
+                },
+                {
+                    name: 'protocol_dtp',
+                    value: '1',
+                },
+                {
+                    name: 'protocol_xtx',
+                    value: '2',
+                },
+                {
+                    name: 'protocol_v3_rdp',
+                    value: '3',
+                },
+                {
+                    name: 'protocol_v3_dtp',
+                    value: '4',
+                },
+                {
+                    name: 'protocol_v3_xtx',
+                    value: '5',
+                }
+            ]
+        }
+    ],
     procedures: [
         {
             name: 'alloc_block',

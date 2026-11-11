@@ -1,8 +1,23 @@
 #include "vmem/vmem_client.h"
 #include "rpc_cpss_client.h"
+#include "rpc_cpssv3_client.h"
 
-int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t write_data(int node, uint64_t vaddr, void *from, uint32_t size, rpc_cpss_protocol_t protocol, int timeout) {
+    if (node == 0) {
+        vmem_write(vaddr, from, size);
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP || protocol == RPC_CPSS_PROTOCOL_XTX ||
+               protocol == RPC_CPSS_PROTOCOL_V3_RDP || protocol == RPC_CPSS_PROTOCOL_V3_XTX) {
+        if (vmem_upload_progress(node, timeout, vaddr, from, size, 2, NULL) != size) {
+            return -4;
+        }
+    } else {
+        return -3;
+    }
 
+    return 0;
+}
+
+static int32_t cpssv1_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
     rpc_cpss_put_block_element_request_t put_request;
     rpc_cpss_put_block_element_response_t put_response;
     rpc_cpss_put_block_element_init(&put_request, block_id, length);
@@ -20,14 +35,9 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
         return -2;
     }
 
-    if (node == 0) {
-        vmem_write(put_response.vaddr, from, put_response.size_actual);
-    } else if (protocol == RPC_PROTOCOL_RDP || protocol == RPC_PROTOCOL_XTX) {
-        if (vmem_upload_progress(node, timeout, put_response.vaddr, from, put_response.size_actual, 2, NULL) != put_response.size_actual) {
-            return -4;
-        }
-    } else {
-        return -3;
+    int result = write_data(node, put_response.vaddr, from, put_response.size_actual, protocol, timeout);
+    if (result < 0) {
+        return result;
     }
 
     rpc_cpss_put_block_element_complete_request_t put_complete_request;
@@ -41,7 +51,58 @@ int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_
     return put_response.size_actual;
 }
 
-int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, csp_timestamp_t * timestamp, rpc_protocol_t protocol, int timeout) {
+static int32_t cpssv3_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
+    rpc_cpssv3_element_put_request_t put_request;
+    rpc_cpssv3_element_put_response_t put_response;
+    rpc_cpssv3_element_put_init(&put_request, block_id, length);
+
+    if (timestamp && timestamp->tv_sec != 0) {
+        put_request.timestamp_s = timestamp->tv_sec;
+        put_request.timestamp_ns = timestamp->tv_nsec;
+    }
+
+    if (rpc_cpssv3_element_put(node, timeout, &put_request, &put_response) < 0) {
+        return -1;
+    }
+
+    if (put_response.result < 0) {
+        return -2;
+    }
+
+    int result = write_data(node, put_response.vaddr, from, put_response.size_actual, protocol, timeout);
+    if (result < 0) {
+        return result;
+    }
+
+    rpc_cpssv3_element_put_complete_request_t put_complete_request;
+    rpc_cpssv3_element_put_complete_response_t put_complete_response;
+    rpc_cpssv3_element_put_complete_init(&put_complete_request, block_id, put_response.vaddr, put_response.size_actual);
+
+    if (rpc_cpssv3_element_put_complete(node, timeout, &put_complete_request, &put_complete_response) < 0) {
+        return -1;
+    }
+
+    return put_response.size_actual;
+}
+
+int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
+    switch (protocol) {
+        case RPC_CPSS_PROTOCOL_RDP:
+        case RPC_CPSS_PROTOCOL_DTP:
+        case RPC_CPSS_PROTOCOL_XTX:
+            return cpssv1_put(node, block_id, from, length, timestamp, protocol, timeout);
+        case RPC_CPSS_PROTOCOL_V3_RDP:
+        case RPC_CPSS_PROTOCOL_V3_DTP:
+        case RPC_CPSS_PROTOCOL_V3_XTX:
+            return cpssv3_put(node, block_id, from, length, timestamp, protocol, timeout);
+        default:
+            break;
+    }
+
+    return -1;
+}
+
+static int32_t cpssv1_get(void * to, int node, uint32_t block_id, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
 
     rpc_cpss_get_block_element_request_t get_request;
     rpc_cpss_get_block_element_response_t get_response;
@@ -58,7 +119,7 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, csp_ti
 
     if (node == 0) {
         vmem_read(to, get_response.vaddr, get_response.size_actual);
-    } else if (protocol == RPC_PROTOCOL_RDP) {
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP) {
         vmem_download_progress(node, timeout, get_response.vaddr, get_response.size_actual, to, 2, 1, NULL);
     } else {
         return -3;
@@ -75,4 +136,57 @@ int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t length, csp_ti
     }
 
     return get_response.size_actual;
+}
+
+static int32_t cpssv3_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
+
+    rpc_cpssv3_elements_get_request_t get_request;
+    rpc_cpssv3_elements_get_response_t get_response;
+    rpc_cpssv3_elements_get_init(&get_request, block_id, number_of_elements);
+
+    int32_t result = rpc_cpssv3_elements_get(node, timeout, &get_request, &get_response);
+    if (result < 0 || get_response.num_elements_actual == 0) {
+        return -1;
+    }
+
+    if (timestamp) {
+        timestamp->tv_sec = 0;
+        timestamp->tv_nsec = 0;
+    }
+
+    if (node == 0) {
+        vmem_read(to, get_response.vaddr, get_response.num_elements_actual);
+    } else if (protocol == RPC_CPSS_PROTOCOL_RDP) {
+        vmem_download_progress(node, timeout, get_response.vaddr, get_response.num_elements_actual, to, 2, 1, NULL);
+    } else {
+        return -3;
+    }
+
+    rpc_cpssv3_elements_drop_request_t drop_request;
+    rpc_cpssv3_elements_drop_response_t drop_response;
+    rpc_cpssv3_elements_drop_init(&drop_request, block_id);
+    drop_request.num_elements = get_response.num_elements_actual;
+
+    if (rpc_cpssv3_elements_drop(node, timeout, &drop_request, &drop_response) < 0) {
+        return -2;
+    }
+
+    return get_response.num_elements_actual;
+}
+
+int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout) {
+    switch (protocol) {
+        case RPC_CPSS_PROTOCOL_RDP:
+        case RPC_CPSS_PROTOCOL_DTP:
+        case RPC_CPSS_PROTOCOL_XTX:
+            return cpssv1_get(to, node, block_id, timestamp, protocol, timeout);
+        case RPC_CPSS_PROTOCOL_V3_RDP:
+        case RPC_CPSS_PROTOCOL_V3_DTP:
+        case RPC_CPSS_PROTOCOL_V3_XTX:
+            return cpssv3_get(to, node, block_id, number_of_elements, timestamp, protocol, timeout);
+        default:
+            break;
+    }
+
+    return -1;
 }
