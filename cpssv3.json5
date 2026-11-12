@@ -1,6 +1,7 @@
 {
     program: 'cpssv3',
     address: 0x10000003,
+    rpc_version: 2,
     enums: [
         {
             name: 'storage_type',
@@ -84,17 +85,23 @@
                     type: 'i32', 
                 }
              ],
-            maxresponses: 10,
             response: [
-                { name: 'name', type: 'string', max_len: 60 },
-                { name: 'block_id', type: 'u32' },
-                { name: 'num_elements', type: 'u32' },
-                { name: 'elem_size', type: 'u32' },
-                { name: 'num_used', type: 'u32' },
                 {
-                    name: 'storage',
-                    description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
-                    type: 'storage_type',
+                    name: 'blocks',
+                    type: 'struct',
+                    max_elements: 10,
+                    contents: [
+                        { name: 'name', type: 'string', max_len: 60 },
+                        { name: 'block_id', type: 'u32' },
+                        { name: 'num_elements', type: 'u32' },
+                        { name: 'elem_size', type: 'u32' },
+                        { name: 'num_used', type: 'u32' },
+                        {
+                            name: 'storage',
+                            description: 'FILE: 0, RAM: 1, EMMC: 2, XTXG2: 3',
+                            type: 'storage_type',
+                        },
+                    ],
                 },
             ]
         },

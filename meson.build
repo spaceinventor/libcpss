@@ -10,8 +10,8 @@ if not clib.found()
 	clib_dep = dependency('libc', fallback: ['picolibc', 'picolibc_dep'], required: true)
 endif
 
-lib_deps = [csp_dep, rpc_dep, clib_dep]
-lib_deps_client = lib_deps + [param_dep]
+lib_deps = [csp_dep, rpc_dep, param_dep, clib_dep]
+lib_deps_client = lib_deps
 
 lib_src_server = []
 gen_src_server = subproject('rpc').get_variable('gen_rpc_server').process('cpss.json5')

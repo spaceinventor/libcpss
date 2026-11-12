@@ -1,6 +1,7 @@
 {
     program: 'cpss',
     address: 0x10000000,
+    rpc_version: 1,
     enums: [
         {
             name: 'protocol',
@@ -87,7 +88,7 @@
                     type: 'u8',
                 },
                 { 
-                    name: 'name', 
+                    name: 'name',
                     type: 'string',
                     max_len: 60,
                 },
