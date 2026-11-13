@@ -18,18 +18,6 @@
                 {
                     name: 'protocol_xtx',
                     value: '2',
-                },
-                {
-                    name: 'protocol_v3_rdp',
-                    value: '3',
-                },
-                {
-                    name: 'protocol_v3_dtp',
-                    value: '4',
-                },
-                {
-                    name: 'protocol_v3_xtx',
-                    value: '5',
                 }
             ]
         }

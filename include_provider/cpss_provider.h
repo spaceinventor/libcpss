@@ -2,4 +2,4 @@
 
 #include <cpss.h>
 
-extern int32_t cpss_put(int node, uint32_t block_id, void * from, uint32_t length, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout);
+int32_t cpss_put(cpss_instance_t *instance, void *from, uint32_t length, csp_timestamp_t *timestamp);
