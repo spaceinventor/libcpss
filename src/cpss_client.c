@@ -191,13 +191,3 @@ int32_t cpss_get(cpss_config_t *config, void *to, uint32_t number_of_elements, c
 
     return -1;
 }
-
-int cpss_config_init(cpss_config_t *config, int node, uint32_t block_id, rpc_cpss_protocol_t protocol, int mtu, int timeout, int version) {
-    config->node = node;
-    config->block_id = block_id;
-    config->protocol = protocol;
-    config->mtu = mtu;
-    config->timeout = timeout;
-    config->version = version;
-    return 0;
-}
