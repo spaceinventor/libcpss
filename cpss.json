@@ -1,6 +1,7 @@
 {
     "program": "cpss",
     "address": 268435456,
+    "rpc_version": 1,
     "enums": [
         {
             "name": "protocol",
