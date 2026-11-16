@@ -10,8 +10,8 @@ static int32_t write_data(cpss_instance_t *instance, uint64_t vaddr, void *from,
     if (instance->node == 0) {
         vmem_write(vaddr, from, size);
     } else if (instance->protocol == RPC_CPSS_PROTOCOL_RDP || instance->protocol == RPC_CPSS_PROTOCOL_XTX) {
-        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu, .cb = NULL };
-        if (vmem_upload_w_opts(&vmem_instance, vaddr, from, size) != size) {
+        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu };
+        if (vmem_client_upload_w_opts(&vmem_instance, vaddr, from, size) != size) {
             return -4;
         }
     } else {
@@ -121,8 +121,8 @@ static int32_t cpssv2_get(cpss_instance_t *instance, void *to, csp_timestamp_t *
     if (instance->node == 0) {
         vmem_read(to, get_response.vaddr, get_response.size_actual);
     } else if (instance->protocol == RPC_CPSS_PROTOCOL_RDP) {
-        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu, .cb = NULL };
-        vmem_download_w_opts(&vmem_instance, get_response.vaddr, get_response.size_actual, to);
+        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu };
+        vmem_client_download_w_opts(&vmem_instance, get_response.vaddr, get_response.size_actual, to);
     } else {
         return -3;
     }
@@ -159,8 +159,8 @@ static int32_t cpssv3_get(cpss_instance_t *instance, void *to, uint32_t number_o
     if (instance->node == 0) {
         vmem_read(to, get_response.vaddr, get_response.num_elements_actual);
     } else if (instance->protocol == RPC_CPSS_PROTOCOL_RDP) {
-        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu, .cb = NULL };
-        vmem_download_w_opts(&vmem_instance, get_response.vaddr, get_response.num_elements_actual * get_response.elem_size, to);
+        vmem_client_instance_t vmem_instance = { .node = instance->node, .timeout = instance->timeout, .mtu = instance->mtu };
+        vmem_client_download_w_opts(&vmem_instance, get_response.vaddr, get_response.num_elements_actual * get_response.elem_size, to);
     } else {
         return -3;
     }
