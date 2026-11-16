@@ -13,6 +13,9 @@ endif
 lib_deps = [csp_dep, rpc_dep, param_dep, clib_dep]
 lib_deps_client = lib_deps
 
+cpss_rpc_spec = meson.current_source_dir() / 'cpss.json5'
+cpssv3_rpc_spec = meson.current_source_dir() / 'cpssv3.json5'
+
 lib_src_server = []
 gen_src_server = subproject('rpc').get_variable('gen_rpc_server').process('cpss.json5')
 gen_src_server_v3 = subproject('rpc').get_variable('gen_rpc_server').process('cpssv3.json5')
