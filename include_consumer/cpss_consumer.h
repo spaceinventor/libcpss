@@ -1,5 +1,18 @@
 #pragma once
 
 #include <cpss.h>
+#include <rpc_cpss.h>
 
-extern int32_t cpss_get(void * to, int node, uint32_t block_id, uint32_t number_of_elements, csp_timestamp_t * timestamp, rpc_cpss_protocol_t protocol, int timeout);
+/**
+ * @brief Retrieves data from a single element.
+ *
+ * If the requested length exceeds the block's element size,
+ * the length will be truncated to fit the available data.
+ *
+ * @param config    The configuration data.
+ * @param to        Pointer to the destination buffer.
+ * @param length    The maximum number of bytes to read.
+ * @param timestamp Pointer to an optional timestamp that will be populated with the element's timestamp.
+ * @return          The number of bytes successfully read from the element (or a negative error code on failure).
+ */
+int32_t cpss_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp);
