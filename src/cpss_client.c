@@ -104,7 +104,22 @@ int32_t cpss_put(cpss_config_t *config, void *from, uint32_t length, csp_timesta
     return -1;
 }
 
-static int32_t cpssv2_get(cpss_config_t *config, void *to, csp_timestamp_t *timestamp) {
+static int32_t read_data(cpss_config_t *config, void *to, uint32_t length, uint64_t vaddr, uint32_t size_actual) {
+    uint32_t size = length > size_actual ? size_actual : length;
+
+    if (config->node == 0) {
+        vmem_read(to, vaddr, size);
+    } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP) {
+        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
+        vmem_client_download(&vmem_config, vaddr, size, to);
+    } else {
+        return -3;
+    }
+
+    return 0;
+}
+
+static int32_t cpssv2_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp) {
 
     rpc_cpss_get_block_element_request_t get_request;
     rpc_cpss_get_block_element_response_t get_response;
@@ -116,16 +131,14 @@ static int32_t cpssv2_get(cpss_config_t *config, void *to, csp_timestamp_t *time
         return -1;
     }
 
-    timestamp->tv_sec = get_response.timestamp_s;
-    timestamp->tv_nsec = get_response.timestamp_ns;
+    if (timestamp) {
+        timestamp->tv_sec = get_response.timestamp_s;
+        timestamp->tv_nsec = get_response.timestamp_ns;
+    }
 
-    if (config->node == 0) {
-        vmem_read(to, get_response.vaddr, get_response.size_actual);
-    } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
-        vmem_client_download(&vmem_config, get_response.vaddr, get_response.size_actual, to);
-    } else {
-        return -3;
+    result = read_data(config, to, length, get_response.vaddr, get_response.size_actual);
+    if (result < 0) {
+        return result;
     }
 
     rpc_cpss_get_block_element_complete_request_t get_complete_request;
@@ -141,50 +154,45 @@ static int32_t cpssv2_get(cpss_config_t *config, void *to, csp_timestamp_t *time
     return get_response.size_actual;
 }
 
-static int32_t cpssv3_get(cpss_config_t *config, void *to, uint32_t number_of_elements, csp_timestamp_t *timestamp) {
+static int32_t cpssv3_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp) {
 
-    rpc_cpssv3_elements_get_request_t get_request;
-    rpc_cpssv3_elements_get_response_t get_response;
-    rpc_cpssv3_elements_get_init(&get_request, config->block_id, number_of_elements);
+    rpc_cpssv3_element_get_request_t get_request;
+    rpc_cpssv3_element_get_response_t get_response;
+    rpc_cpssv3_element_get_init(&get_request, config->block_id);
 
-    int32_t result = rpc_cpssv3_elements_get(config->node, config->timeout, &get_request, &get_response);
-    if (result < 0 || get_response.num_elements_actual == 0) {
+    int32_t result = rpc_cpssv3_element_get(config->node, config->timeout, &get_request, &get_response);
+    if (result < 0 || get_response.size_actual == 0) {
         return -1;
     }
 
     if (timestamp) {
-        timestamp->tv_sec = 0;
-        timestamp->tv_nsec = 0;
+        timestamp->tv_sec = get_response.timestamp_s;
+        timestamp->tv_nsec = get_response.timestamp_ns;
     }
 
-    if (config->node == 0) {
-        vmem_read(to, get_response.vaddr, get_response.num_elements_actual);
-    } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
-        vmem_client_download(&vmem_config, get_response.vaddr, get_response.num_elements_actual * get_response.elem_size, to);
-    } else {
-        return -3;
+    result = read_data(config, to, length, get_response.vaddr, get_response.size_actual);
+    if (result < 0) {
+        return result;
     }
 
     rpc_cpssv3_elements_drop_request_t drop_request;
     rpc_cpssv3_elements_drop_response_t drop_response;
     rpc_cpssv3_elements_drop_init(&drop_request, config->block_id);
-    drop_request.num_elements = get_response.num_elements_actual;
 
     if (rpc_cpssv3_elements_drop(config->node, config->timeout, &drop_request, &drop_response) < 0) {
         return -2;
     }
 
-    return get_response.num_elements_actual;
+    return get_response.size_actual;
 }
 
-int32_t cpss_get(cpss_config_t *config, void *to, uint32_t number_of_elements, csp_timestamp_t *timestamp) {
+int32_t cpss_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp) {
     switch (config->version) {
         case 1:
         case 2:
-            return cpssv2_get(config, to, timestamp);
+            return cpssv2_get(config, to, length, timestamp);
         case 3:
-            return cpssv3_get(config, to, number_of_elements, timestamp);
+            return cpssv3_get(config, to, length, timestamp);
         default:
             break;
     }
