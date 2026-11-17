@@ -12,7 +12,7 @@
  * @param config    The configuration data.
  * @param to        Pointer to the destination buffer.
  * @param length    The maximum number of bytes to read.
- * @param timestamp Pointer to an optional timestamp to be set on the element.
+ * @param timestamp Pointer to an optional timestamp that will be populated with the element's timestamp.
  * @return          The number of bytes successfully read from the element (or a negative error code on failure).
  */
 int32_t cpss_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp);
