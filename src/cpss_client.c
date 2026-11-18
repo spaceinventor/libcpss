@@ -10,7 +10,7 @@ static int32_t write_data(cpss_config_t *config, uint64_t vaddr, void *from, uin
     if (config->node == 0) {
         vmem_write(vaddr, from, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP || config->protocol == RPC_CPSS_PROTOCOL_XTX) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout };
+        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
         vmem_config.mtu = config->version == 3 ? config->mtu : VMEM_SERVER_MTU;
         if (vmem_client_upload(&vmem_config, vaddr, from, size) != size) {
             return -4;
