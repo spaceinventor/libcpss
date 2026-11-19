@@ -12,7 +12,7 @@ static int32_t write_data(cpss_config_t *config, uint64_t vaddr, void *from, uin
     if (config->node == 0) {
         result = vmem_write(vaddr, from, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP || config->protocol == RPC_CPSS_PROTOCOL_XTX) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu, .cb = NULL };
+        vmem_client_config_t vmem_config = { .node = config->node, .mtu = config->mtu, .cb = NULL };
         result = vmem_client_upload(&vmem_config, vaddr, from, size);
         if (result != size) {
             result = -4;
@@ -113,7 +113,7 @@ static int32_t read_data(cpss_config_t *config, void *to, uint32_t length, uint6
     if (config->node == 0) {
         result = vmem_read(to, vaddr, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
+        vmem_client_config_t vmem_config = { .node = config->node, .mtu = config->mtu };
         result = vmem_client_download(&vmem_config, vaddr, size, to);
         if (result != size) {
             result = -4;
