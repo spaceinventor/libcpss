@@ -7,19 +7,21 @@
 #include "rpc_cpssv3_client.h"
 
 static int32_t write_data(cpss_config_t *config, uint64_t vaddr, void *from, uint32_t size) {
+    int32_t result = 0;
+
     if (config->node == 0) {
-        vmem_write(vaddr, from, size);
+        result = vmem_write(vaddr, from, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP || config->protocol == RPC_CPSS_PROTOCOL_XTX) {
-        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout };
-        vmem_config.mtu = config->version == 3 ? config->mtu : VMEM_SERVER_MTU;
-        if (vmem_client_upload(&vmem_config, vaddr, from, size) != size) {
-            return -4;
+        vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu, .cb = NULL };
+        result = vmem_client_upload(&vmem_config, vaddr, from, size);
+        if (result != size) {
+            result = -4;
         }
     } else {
-        return -3;
+        result = -3;
     }
 
-    return 0;
+    return result;
 }
 
 static int32_t cpssv2_put(cpss_config_t *config, void *from, uint32_t length, csp_timestamp_t *timestamp) {
@@ -105,18 +107,22 @@ int32_t cpss_put(cpss_config_t *config, void *from, uint32_t length, csp_timesta
 }
 
 static int32_t read_data(cpss_config_t *config, void *to, uint32_t length, uint64_t vaddr, uint32_t size_actual) {
+    int32_t result = 0;
     uint32_t size = length > size_actual ? size_actual : length;
 
     if (config->node == 0) {
-        vmem_read(to, vaddr, size);
+        result = vmem_read(to, vaddr, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP) {
         vmem_client_config_t vmem_config = { .node = config->node, .timeout = config->timeout, .mtu = config->mtu };
-        vmem_client_download(&vmem_config, vaddr, size, to);
+        result = vmem_client_download(&vmem_config, vaddr, size, to);
+        if (result != size) {
+            result = -4;
+        }
     } else {
         return -3;
     }
 
-    return 0;
+    return result;
 }
 
 static int32_t cpssv2_get(cpss_config_t *config, void *to, uint32_t length, csp_timestamp_t *timestamp) {
