@@ -6,13 +6,14 @@
 #include "rpc_cpss_client.h"
 #include "rpc_cpssv3_client.h"
 
-static int32_t write_data(cpss_config_t *config, uint64_t vaddr, void *from, uint32_t size) {
+static int32_t write_data(cpss_config_t *config, uint64_t vaddr, void *from, uint32_t size, int cpss_version) {
     int32_t result = 0;
 
     if (config->node == 0) {
         result = vmem_write(vaddr, from, size);
     } else if (config->protocol == RPC_CPSS_PROTOCOL_RDP || config->protocol == RPC_CPSS_PROTOCOL_XTX) {
-        vmem_client_config_t vmem_config = { .node = config->node, .mtu = config->mtu, .cb = NULL };
+        /* CPSS V3 can safely assume an updated VMEM server supporting transfer ackownlegement (vmem_config.version = 4), earlier versions must rely on vmem_config.version = 2 */
+        vmem_client_config_t vmem_config = { .node = config->node, .mtu = config->mtu, .cb = NULL, .version = cpss_version==3 ? 4 : 2 };
         result = vmem_client_upload(&vmem_config, vaddr, from, size);
         if (result != size) {
             result = -4;
@@ -42,7 +43,7 @@ static int32_t cpssv2_put(cpss_config_t *config, void *from, uint32_t length, cs
         return -2;
     }
 
-    int result = write_data(config, put_response.vaddr, from, put_response.size_actual);
+    int result = write_data(config, put_response.vaddr, from, put_response.size_actual, config->version);
     if (result < 0) {
         return result;
     }
@@ -76,7 +77,7 @@ static int32_t cpssv3_put(cpss_config_t *config, void *from, uint32_t length, cs
         return -2;
     }
 
-    int result = write_data(config, put_response.vaddr, from, put_response.size_actual);
+    int result = write_data(config, put_response.vaddr, from, put_response.size_actual, config->version);
     if (result < 0) {
         return result;
     }
